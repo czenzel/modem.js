@@ -1,6 +1,7 @@
 var baudrate; // initialized to 1200 by UI
 var encoder, decoder;
-var audioCtx = new AudioContext();
+var audioCtx = new (window.AudioContext ||
+               window.webkitAudioContext)();
 var speakerSampleRate = audioCtx.sampleRate;
 var inputSampleRate;
 var afskNode, audioSource, micStream;
@@ -55,6 +56,8 @@ function runModem(text) {
         navigator.mozGetUserMedia({audio: true}, onMicInit, onMicError);
       else if (navigator.webkitGetUserMedia)
         navigator.webkitGetUserMedia({audio: true}, onMicInit, onMicError);
+      else if (navigator.mediaDevices.getUserMedia)
+        navigator.mediaDevices.getUserMedia({audio: true}).then(onMicInit).catch(onMicError);
       else
         throw "no getUserMedia";
     }
